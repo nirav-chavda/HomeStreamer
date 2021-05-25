@@ -1,0 +1,40 @@
+.clickable {
+  cursor: pointer;
+}
+.clickable:link {
+  text-decoration: none;
+}
+
+.clickable:visited {
+  text-decoration: none;
+}
+
+.clickable:hover {
+  text-decoration: none;
+}
+
+.clickable:active {
+  text-decoration: none;
+}
+
+.video-player {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.content {
+  list-style-type: none;
+}
+
+.content > li {
+  box-sizing: border-box;
+  background-color: lightyellow;
+  border: 1px solid antiquewhite;
+  line-height: 40px;
+  padding-left: 1em;
+  margin-left: -4%;
+}
+
+.content > li.dir {
+  background-color: lightgoldenrodyellow !important;
+}

@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <title>{{appName}}</title>
+    <link rel="icon" type="image/png" href="webapp.ico" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css" />
+    <script src="/js/jquery.js"></script>
+</head>
+
+<body class="container">
+    {{#if streamPage}}
+    <div class="page-header">
+    </div>
+    {{else}}
+    <div class="page-header">
+        <h1>{{appName}}</h1>
+    </div>
+    {{/if}}
+    {{{body}}}
+    <script src="/js/sweetalert.min.js" defer></script>
+    <script src="/js/main.js"></script>
+</body>
+
+</html>
