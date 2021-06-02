@@ -119,9 +119,10 @@ exports.add = async (req, res) => {
 
 exports.make = (req, res) => {
 
-    const full_path = req.body.path;
+    const currDir = ('path' in req.body && req.body.path != null) ? resolveTargetDirectory(req) : uploadsPath;
+    const full_path = req.body.dir;
     const fileName = path.basename(req.body.name);
-    const destination = path.resolve(`${uploadsPath}/${fileName}`);
+    const destination = path.resolve(`${currDir}/${fileName}`);
 
     if (!checkValidPath(full_path)) {
         res.status(400).json({
@@ -167,7 +168,7 @@ exports.addDirectory = (req, res) => {
             fs.mkdirSync(destination);
             message = `${newDirName} added!`;
         }
-        
+
         res.status(200).json({
             success: true,
             message,

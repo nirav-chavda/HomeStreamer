@@ -1,8 +1,12 @@
 (function () {
     window.currentDir = null;
-    let add_btn = document.querySelector('.add-btn');
+    let home_btn = document.querySelector('.home-btn');
+    let add_btn = document.querySelector('.add-file');
     let reload_btn = document.querySelector('.reload-btn');
     let add_dir_btn = document.querySelector('.add-dir');
+    $(home_btn).on('click', function () {
+        window.location = '/';
+    });
     $(add_btn).on('click', function () {
         getPath();
     });
@@ -41,6 +45,9 @@ function addDirectory() {
             closeOnClickOutside: false,
         })
         .then(name => {
+            if (name === null || name === undefined || name.trim() === '') {
+                throw "";
+            }
             return makeRequest('/dir/add', {
                 path,
                 name
@@ -52,11 +59,15 @@ function addDirectory() {
         .then(json => {
             swal({
                 title: json.message.replace('added!', ''),
-                text: 'Added!'
+                text: 'Added!',
+                timer: 3000
             });
             loadContentFromDir(json.dir);
         })
         .catch(err => {
+            if (typeof err === 'string' && err == '') {
+                return;
+            }
             swal('Something went wrong');
         });
 }
@@ -72,7 +83,9 @@ function getPath() {
             },
         })
         .then(path => {
-            if (!path) throw null;
+            if (path === null || path === undefined || path.trim() === '') {
+                throw "";
+            }
             return makeRequest('/add', {
                 path
             })
@@ -82,17 +95,23 @@ function getPath() {
         })
         .then(json => {
             if (!json.success) {
-                swal(json.message);
+                swal(json.message, {
+                    timer: 3000
+                });
             } else {
                 getName(json.path, json.name);
             }
         })
         .catch(err => {
+            if (typeof err === 'string' && err == '') {
+                return;
+            }
             swal('Something went wrong');
         });
 }
 
-function getName(path, defaultName) {
+function getName(dir, defaultName) {
+    const path = window.currentDir;
     swal({
             text: 'Add Name Here',
             content: {
@@ -111,17 +130,23 @@ function getName(path, defaultName) {
             name = (!name) ? defaultName : name;
             return makeRequest('/make', {
                 path,
-                name
+                name,
+                dir
             })
         })
         .then(results => {
             return results.json();
         })
         .then(json => {
-            swal(json.message);
+            swal(json.message, {
+                timer: 3000
+            });
             listContent();
         })
         .catch(err => {
+            if (typeof err === 'string' && err == '') {
+                return;
+            }
             swal('Something went wrong');
         });
 }

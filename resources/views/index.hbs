@@ -1,26 +1,24 @@
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
-                <li><a class="add-btn clickable">Add</a></li>
-            </ul>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li><a>{{server}}</a></li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
-
 <div class="container row">
-    <h1>Your Precious Library !!</h1>
-    <hr />
     <ul class="content-btn">
-        <li><button type="button" class="btn disabled" disabled>{{ server }}</button></li>
-        <li><button type="button" class="btn add-dir" title="Create Folder"><i class="fa fa-plus" aria-hidden="true"></i></button></li>
-        <li><button type="button" class="btn reload-btn" title="Reload"><i class="fa fa-refresh" aria-hidden="true"></i></button></li>
+        <li>
+            <button type="button" class="btn disabled" disabled>{{server}}</button>
+        </li>
+        <li>
+            <button type="button" class="btn add-dir" title="Create Folder"><i class="fa fa-folder-o"
+                    aria-hidden="true"></i></button>
+        </li>
+        <li>
+            <button type="button" class="btn add-file" title="Add Video"><i class="fa fa-plus"
+                    aria-hidden="true"></i></button>
+        </li>
+        <li>
+            <button type="button" class="btn reload-btn" title="Reload"><i class="fa fa-refresh"
+                    aria-hidden="true"></i></button>
+        </li>
+        <li>
+            <button type="button" class="btn home-btn" title="Home"><i class="fa fa-home"
+                    aria-hidden="true"></i></button>
+        </li>
     </ul>
     <br />
     <ul class="content">
