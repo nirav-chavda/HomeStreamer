@@ -1,17 +1,64 @@
 (function () {
+    window.currentDir = null;
     let add_btn = document.querySelector('.add-btn');
     let reload_btn = document.querySelector('.reload-btn');
+    let add_dir_btn = document.querySelector('.add-dir');
     $(add_btn).on('click', function () {
         getPath();
     });
+    $(add_dir_btn).on('click', function () {
+        addDirectory();
+    });
     $(reload_btn).on('click', function () {
-        listContent();
+        loadContentFromDir();
     });
     listContent();
 })()
 
+function loadContentFromDir(dirname = null) {
+    if (dirname != null) {
+        window.currentDir = dirname;
+    }
+    listContent();
+}
+
 function dirClicked(ele) {
-    listContent($(ele).data('id'));
+    loadContentFromDir($(ele).data('id'));
+}
+
+function addDirectory() {
+    const path = window.currentDir;
+
+    swal({
+            text: 'Folder Name',
+            content: {
+                element: 'input',
+            },
+            button: {
+                text: 'Add',
+                closeModal: false,
+            },
+            closeOnClickOutside: false,
+        })
+        .then(name => {
+            return makeRequest('/dir/add', {
+                path,
+                name
+            })
+        })
+        .then(results => {
+            return results.json();
+        })
+        .then(json => {
+            swal({
+                title: json.message.replace('added!', ''),
+                text: 'Added!'
+            });
+            loadContentFromDir(json.dir);
+        })
+        .catch(err => {
+            swal('Something went wrong');
+        });
 }
 
 function getPath() {
@@ -89,7 +136,8 @@ function makeRequest(path, body) {
     });
 }
 
-function listContent(dirname = null) {
+function listContent() {
+    const dirname = window.currentDir;
     const url = (dirname != null) ? '/list?dir=' + dirname : '/list';
     $.get(url, (res) => {
         let data = '';

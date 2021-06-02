@@ -5,7 +5,6 @@
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
                 <li><a class="add-btn clickable">Add</a></li>
-                <li><a class="reload-btn clickable">Reload</a></li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -18,6 +17,12 @@
 <div class="container row">
     <h1>Your Precious Library !!</h1>
     <hr />
+    <ul class="content-btn">
+        <li><button type="button" class="btn disabled" disabled>{{ server }}</button></li>
+        <li><button type="button" class="btn add-dir" title="Create Folder"><i class="fa fa-plus" aria-hidden="true"></i></button></li>
+        <li><button type="button" class="btn reload-btn" title="Reload"><i class="fa fa-refresh" aria-hidden="true"></i></button></li>
+    </ul>
+    <br />
     <ul class="content">
     </ul>
 </div>

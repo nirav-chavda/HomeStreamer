@@ -12,17 +12,25 @@ const permissionMessage = {
     other: "Not have enough permission! Try to run with sudo"
 }
 
+const encodePath = (path) => Buffer.from(path).toString('base64');
+
+const decodePath = (path) => Buffer.from(path, 'base64').toString('ascii');
+
 function checkValidPath(full_path) {
     stat = fs.lstatSync(full_path);
     return (stat.isFile() && !stat.isSymbolicLink() && supportedTypes.includes(path.extname(full_path)))
 }
 
-exports.list = (req, res) => {
-
+function resolveTargetDirectory(req) {
     let targetDir = uploadsPath;
 
+    if ('body' in req && 'path' in req.body && req.body.path != null) {
+        req.query = req.query ?? {};
+        req.query.dir = req.query.dir ?? req.body.path;
+    }
+
     if (req.query.dir) {
-        req.query.dir = Buffer.from(req.query.dir, 'base64').toString('ascii');
+        req.query.dir = decodePath(req.query.dir);
         if (req.query.dir === './..') {
             delete req.query.dir;
             targetDir = uploadsPath;
@@ -37,6 +45,13 @@ exports.list = (req, res) => {
         targetDir = path.normalize(targetDir);
     }
 
+    return targetDir;
+}
+
+exports.list = (req, res) => {
+
+    let targetDir = resolveTargetDirectory(req);
+
     let list = [];
     uploadsPath = path.resolve(uploadsPath);
     targetDir = path.resolve(targetDir);
@@ -46,7 +61,7 @@ exports.list = (req, res) => {
         if (backDir != '') {
             list.push({
                 name: 'Back',
-                value: Buffer.from(`${path.dirname(backDir)}/..`).toString('base64'),
+                value: encodePath(`${path.dirname(backDir)}/..`),
                 type: 'dir',
                 isBack: true
             });
@@ -54,11 +69,14 @@ exports.list = (req, res) => {
     }
 
     fs.readdirSync(targetDir).forEach(file => {
-        list.push({
-            name: file,
-            value: Buffer.from((req.query.dir) ? path.normalize(`${req.query.dir}/${file}`) : file).toString('base64'),
-            type: (fs.lstatSync(path.normalize(`${targetDir}/${file}`)).isDirectory()) ? 'dir' : 'file'
-        });
+        const isDir = fs.lstatSync(path.normalize(`${targetDir}/${file}`)).isDirectory();
+        if (supportedTypes.includes(path.extname(file)) || isDir) {
+            list.push({
+                name: file,
+                value: encodePath((req.query.dir) ? path.normalize(`${req.query.dir}/${file}`) : file),
+                type: (isDir) ? 'dir' : 'file'
+            });
+        }
     });
 
     res.status(200).json({
@@ -103,7 +121,7 @@ exports.make = (req, res) => {
 
     const full_path = req.body.path;
     const fileName = path.basename(req.body.name);
-    const destination = `${uploadsPath}/${fileName}`
+    const destination = path.resolve(`${uploadsPath}/${fileName}`);
 
     if (!checkValidPath(full_path)) {
         res.status(400).json({
@@ -121,7 +139,6 @@ exports.make = (req, res) => {
     } else {
         try {
             fs.symlinkSync(full_path, destination, 'file');
-            console.log("\nSymlink created\n");
             res.status(200).json({
                 success: true,
                 message: 'Added'
@@ -134,5 +151,34 @@ exports.make = (req, res) => {
                 message: (err.code === 'EPERM') ? ((os.platform() === 'win32') ? permissionMessage.win32 : permissionMessage.win32) : 'Operation Failed'
             });
         }
+    }
+}
+
+exports.addDirectory = (req, res) => {
+    const currDir = ('path' in req.body && req.body.path != null) ? resolveTargetDirectory(req) : uploadsPath;
+    const newDirName = path.basename(req.body.name).replace(/'/g, '').replace(/"/g, '');
+    const destination = path.resolve(`${currDir}/${newDirName}`);
+    let message;
+
+    try {
+        if (fs.existsSync(destination)) {
+            message = `'${newDirName}' already exists`;
+        } else {
+            fs.mkdirSync(destination);
+            message = `${newDirName} added!`;
+        }
+        
+        res.status(200).json({
+            success: true,
+            message,
+            dir: (currDir === uploadsPath) ? null : encodePath(path.relative(uploadsPath, path.dirname(destination)))
+        });
+    } catch (err) {
+        const code = ('code' in err && err.code === 'EPERM') ? 400 : 500;
+        res.status(code).json({
+            success: false,
+            message: ('code' in err && err.code === 'EPERM') ? ((os.platform() === 'win32') ? permissionMessage.win32 : permissionMessage.win32) : 'Operation Failed'
+        });
+        console.error(err);
     }
 }

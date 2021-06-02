@@ -38,3 +38,33 @@
 .content > li.dir {
   background-color: lightgoldenrodyellow !important;
 }
+
+.content-btn {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.content-btn > li {
+  float: right;
+  background-color: transparent;
+  border: 1px solid transparent;
+  line-height: 20px;
+  padding: 10px 5px;
+}
+
+.content-btn > li > a {
+  display: block;
+  color: #337ab7;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn.disabled {
+  cursor: text;
+}
+
+.swal-overlay {
+  background-color: rgba(0, 0, 0, 0.45);
+}

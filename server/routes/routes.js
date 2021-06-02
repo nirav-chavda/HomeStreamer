@@ -18,6 +18,7 @@ module.exports = function (app) {
     app.get('/list', ContentController.list);
     app.post('/add', ContentController.add);
     app.post('/make', ContentController.make);
+    app.post('/dir/add', ContentController.addDirectory);
 
     app.use((req, res, next) => {
         res.status(404).render('error_pages/404', {});
