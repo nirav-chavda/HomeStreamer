@@ -1,8 +1,10 @@
 <div class="container row">
     <ul class="content-btn">
+        {{#if server}}
         <li>
             <button type="button" class="btn disabled" disabled>{{server}}</button>
         </li>
+        {{/if}}
         <li>
             <button type="button" class="btn add-dir" title="Create Folder"><i class="fa fa-folder-o"
                     aria-hidden="true"></i></button>

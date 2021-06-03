@@ -1,4 +1,3 @@
-const fs = require('fs');
 const logger = require('../../lib/logger');
 
 module.exports = function (app) {
@@ -19,6 +18,7 @@ module.exports = function (app) {
     app.post('/add', ContentController.add);
     app.post('/make', ContentController.make);
     app.post('/dir/add', ContentController.addDirectory);
+    app.post('/delete', ContentController.delete);
 
     app.use((req, res, next) => {
         res.status(404).render('error_pages/404', {});

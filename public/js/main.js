@@ -16,6 +16,9 @@
     $(reload_btn).on('click', function () {
         loadContentFromDir();
     });
+    $(document).on('click', '.trash-btn', function (event) {
+        deleteItem($(this).closest('li').find('a:first').data('id'));
+    })
     listContent();
 })()
 
@@ -151,6 +154,50 @@ function getName(dir, defaultName) {
         });
 }
 
+function deleteItem(path) {
+    if (path === '') {
+        swal('Something went wrong');
+        return;
+    }
+    swal({
+            title: 'Are you sure?',
+            buttons: true,
+            dangerMode: true,
+            closeOnClickOutside: false,
+            closeOnEsc: false
+        })
+        .then(res => {
+            if (!res) {
+                throw "";
+            }
+            return makeRequest('/delete', {
+                path
+            })
+        })
+        .then(results => {
+            return results.json();
+        })
+        .then(json => {
+            if (json.success) {
+                swal(json.message, {
+                    icon: 'success',
+                    timer: 3000
+                });
+                listContent();
+            } else {
+                swal(json.message, {
+                    timer: 3000
+                });
+            }
+        })
+        .catch(err => {
+            if (typeof err === 'string' && err == '') {
+                return;
+            }
+            swal('Something went wrong');
+        });
+}
+
 function makeRequest(path, body) {
     return fetch(path, {
         method: 'POST',
@@ -169,13 +216,21 @@ function listContent() {
         let dirData = '';
         res.list.forEach(file => {
             if (file.type === 'dir') {
-                dirData += '<li class="dir"><a onclick="dirClicked(this)" class="clickable" data-id="' + file.value + '">' + file.name;
+                dirData += '<li class="dir">';
+                dirData += '<div><a onclick="dirClicked(this)" class="clickable left" data-id="' + file.value + '">' + file.name;
                 if (file.isBack) {
-                    dirData += '&nbsp;&nbsp;<i class="fa fa-level-up" aria-hidden="true"></i>';
+                    dirData += '&nbsp;&nbsp;<i class="fa fa-level-up" aria-hidden="true"></i></a>';
+                } else {
+                    dirData += '</a><a class="clickable right trash-btn"><i class="fa fa-trash" aria-hidden="true"></i></a>';
                 }
-                dirData += '</a></li>';
+                dirData += '<div style="clear: both;"></div>';
+                dirData += '</div></li>';
             } else {
-                data += '<li><a href="/watch/' + file.value + '" target="_blank" class="clickable">' + file.name + '</a></li>';
+                data += '<li>';
+                data += '<div><a href="/watch/' + file.value + '" target="_blank" class="clickable" data-id="' + file.value + '">' + file.name + '</a>';
+                data += '<a class="clickable right trash-btn"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+                data += '<div style="clear: both;"></div>'
+                data += '</div></li>';
             }
         });
         data = dirData + data;

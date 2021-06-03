@@ -183,3 +183,42 @@ exports.addDirectory = (req, res) => {
         console.error(err);
     }
 }
+
+exports.delete = (req, res) => {
+    const pathname = path.resolve(`${uploadsPath}/${decodePath(req.body.path)}`);
+
+    try {
+        if (!fs.existsSync(pathname)) {
+            throw 'Invalid Path passed!|400';
+        }
+        if (fs.statSync(pathname).isDirectory()) {
+            fs.rmdirSync(pathname, {
+                recursive: true
+            });
+        } else {
+            fs.unlinkSync(pathname);
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Removed'
+        });
+    } catch (e) {
+        let statusCode = 500;
+        let message = 'Something went wrong';
+        if (typeof e === 'string' && e == '') {
+            if (e.includes('|')) {
+                const error = e.split('|');
+                message = error[0];
+                statusCode = error[1];
+            } else {
+                message = e;
+            }
+        } else {
+            console.error(e);
+        }
+        res.status(statusCode).json({
+            success: false,
+            message
+        });
+    }
+}
