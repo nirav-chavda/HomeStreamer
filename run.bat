@@ -1,4 +1,18 @@
 @echo off
+
+if not exist .env (
+    echo "Copying file"
+    copy .env.example .env
+)
+
+if not exist node_modules (
+    echo "Installing dependencies"
+    call npm install > nul 2>&1
+    echo "Completed"
+)
+
+cls
+
 :: BatchGotAdmin
 ::-------------------------------------
 REM  --> Check for permissions
@@ -23,5 +37,4 @@ if '%errorlevel%' NEQ '0' (
     pushd "%CD%"
     CD /D "%~dp0"
 
-cls
 npm run start
