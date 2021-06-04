@@ -25,8 +25,8 @@ function resolveTargetDirectory(req) {
     let targetDir = uploadsPath;
 
     if ('body' in req && 'path' in req.body && req.body.path != null) {
-        req.query = req.query ?? {};
-        req.query.dir = req.query.dir ?? req.body.path;
+        req.query = (req.query == undefined || req.query == null) ? {} : req.query;
+        req.query.dir = (req.query.dir == undefined || req.query.dir == null) ? req.body.path : req.query.dir;
     }
 
     if (req.query.dir) {
