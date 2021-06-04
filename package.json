@@ -2,7 +2,12 @@
   "name": "streamer-app",
   "version": "1.0.0",
   "description": "A streaming server that is designed to run on a local network.",
-  "keywords": ["stream", "streamer", "streaming-server", "streaming"],
+  "keywords": [
+    "stream",
+    "streamer",
+    "streaming-server",
+    "streaming"
+  ],
   "homepage": "https://github.com/nirav-chavda/HomeStreamer#readme",
   "bugs": {
     "url": "https://github.com/nirav-chavda/HomeStreamer/issues",
