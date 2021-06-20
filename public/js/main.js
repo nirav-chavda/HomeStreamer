@@ -4,6 +4,7 @@
     let add_btn = document.querySelector('.add-file');
     let reload_btn = document.querySelector('.reload-btn');
     let add_dir_btn = document.querySelector('.add-dir');
+    let add_dir_files_btn = document.querySelector('.add-dir-files');
     $(home_btn).on('click', function () {
         window.location = '/';
     });
@@ -12,6 +13,9 @@
     });
     $(add_dir_btn).on('click', function () {
         addDirectory();
+    });
+    $(add_dir_files_btn).on('click', function () {
+        addDirectoryWithFiles();
     });
     $(reload_btn).on('click', function () {
         loadContentFromDir();
@@ -65,6 +69,53 @@ function addDirectory() {
                 text: 'Added!',
                 timer: 3000
             });
+            loadContentFromDir(json.dir);
+        })
+        .catch(err => {
+            if (typeof err === 'string' && err == '') {
+                return;
+            }
+            swal('Something went wrong');
+        });
+}
+
+function addDirectoryWithFiles() {
+    const path = window.currentDir;
+
+    swal({
+            text: 'Add Folder Path',
+            content: {
+                element: 'input',
+            },
+            button: {
+                text: 'Add',
+                closeModal: false,
+            },
+            closeOnClickOutside: false,
+        })
+        .then(name => {
+            if (name === null || name === undefined || name.trim() === '') {
+                throw "";
+            }
+            return makeRequest('/dir/upload', {
+                path,
+                name
+            })
+        })
+        .then(results => {
+            return results.json();
+        })
+        .then(json => {
+            let swalData = {
+                timer: 3000
+            };
+            if (!json.success) {
+                swalData.text = json.message;
+            } else {
+                swalData.title = json.message.replace('added!', '');
+                swalData.text = 'Added!';
+            }
+            swal(swalData);
             loadContentFromDir(json.dir);
         })
         .catch(err => {

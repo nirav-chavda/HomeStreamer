@@ -155,6 +155,79 @@ exports.make = (req, res) => {
     }
 }
 
+exports.uploadDirectory = (req, res) => {
+
+    let message = "";
+
+    try {
+        if (!path.isAbsolute(req.body.name)) {
+            message = 'Path is not absolute'
+        } else if (!fs.existsSync(req.body.name)) {
+            message = 'Path does not exists';
+        } else if (!fs.statSync(req.body.name).isDirectory()) {
+            message = 'Please provide a path to Folder';
+        }
+        if (message != "") {
+            return res.status(400).json({
+                success: false,
+                message
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
+    }
+
+    const currDir = ('path' in req.body && req.body.path != null) ? resolveTargetDirectory(req) : uploadsPath;
+    const newDirName = path.basename(req.body.name).replace(/'/g, '').replace(/"/g, '');
+    const destination = path.resolve(`${currDir}/${newDirName}`);
+    let success;
+
+    try {
+        if (fs.existsSync(destination)) {
+            message = `'${newDirName}' already exists`;
+            success = false;
+        } else {
+
+            let symlinkPath;
+            let sourcePath;
+
+            fs.mkdirSync(destination);
+
+            fs.readdirSync(req.body.name).forEach((file) => {
+                sourcePath = path.resolve(`${req.body.name}${path.sep}${file}`);
+                symlinkPath = path.resolve(`${destination}${path.sep}${file}`);
+                if (checkValidPath(sourcePath)) {
+                    fs.symlinkSync(sourcePath, symlinkPath, 'file');
+                }
+            });
+
+            message = `${newDirName} added!`;
+            success = true;
+        }
+
+        res.status(200).json({
+            success,
+            message,
+            dir: (currDir === uploadsPath) ? null : encodePath(path.relative(uploadsPath, path.dirname(destination)))
+        });
+    } catch (err) {
+        const code = ('code' in err && err.code === 'EPERM') ? 400 : 500;
+        if (fs.existsSync(destination)) {
+            fs.rmdirSync(destination, {
+                recursive: true
+            });
+        }
+        res.status(code).json({
+            success: false,
+            message: ('code' in err && err.code === 'EPERM') ? ((os.platform() === 'win32') ? permissionMessage.win32 : permissionMessage.win32) : 'Operation Failed'
+        });
+        console.error(err);
+    }
+}
+
 exports.addDirectory = (req, res) => {
     const currDir = ('path' in req.body && req.body.path != null) ? resolveTargetDirectory(req) : uploadsPath;
     const newDirName = path.basename(req.body.name).replace(/'/g, '').replace(/"/g, '');
