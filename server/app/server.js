@@ -3,6 +3,7 @@ const hbs = require('express-handlebars');
 const path = require('path');
 const morgan = require('morgan');
 const helpers = require('../../lib/handlebarsHelper');
+const sessionHandler = require('../controllers/SessionController').sessionHandler;
 const {
     rootPath,
     env
@@ -23,7 +24,9 @@ app.use(express.json());
 if (env === 'development') {
     app.use(morgan('dev'));
 }
+
 app.use(express.static(rootPath + '/public'));
+app.use(sessionHandler);
 
 require('../routes/routes')(app);
 
