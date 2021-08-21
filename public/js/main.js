@@ -19,11 +19,13 @@
     });
     $(reload_btn).on('click', function () {
         loadContentFromDir();
+        getHistory();
     });
     $(document).on('click', '.trash-btn', function (event) {
         deleteItem($(this).closest('li').find('a:first').data('id'));
-    })
+    });
     listContent();
+    getHistory();
 })()
 
 function loadContentFromDir(dirname = null) {
@@ -287,4 +289,34 @@ function listContent() {
         data = dirData + data;
         $('.content').html((data === '') ? 'No Files Available' : data);
     });
+}
+
+function getHistory() {
+
+    const url = '/history/get';
+    var sessionID = localStorage.getItem('sessionID');
+
+    if (sessionID != "" && sessionID != null && sessionID != 'null') {
+        document.cookie = `sessionID=${sessionID}`
+    }
+
+    $.get(url, (res) => {
+        if (res.success) {
+            sessionID = getCookieValue("sessionID");
+            localStorage.setItem("sessionID", sessionID);
+            if (res.data != null) {
+                content = '<button type="button" class="btn disabled" title="Last Played" disabled>';
+                content += `<i class="fa fa-history" aria-hidden="true"></i>&emsp;<a href="/watch/${res.data.history_link}" alt="${res.data.history_link}" target="_blank">${res.data.history_name}</a>`;
+                content += '</button>';
+                $('.hist').html(content);
+            }
+        } else {
+            $('.hist').html('<button type="button" class="btn disabled" disabled>Error loading last played video</button>');
+        }
+    });
+}
+
+function getCookieValue(name) {
+    let result = document.cookie.match("(^|[^;]+)\\s*" + name + "\\s*=\\s*([^;]+)")
+    return result ? result.pop() : ""
 }

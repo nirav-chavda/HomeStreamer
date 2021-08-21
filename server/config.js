@@ -17,4 +17,5 @@ exports.config = {
     debugs_logs: (process.env.DEBUG_LOGS) ? process.env.DEBUG_LOGS : 'enabled',
     rootPath: rootPath,
     uploadsPath: `${rootPath}/resources/uploads`,
+    dataPath: `${rootPath}/server/data`
 }

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const _path = require('path');
+const HistoryController = require('./HistoryController')
 const {
     uploadsPath
 } = require('../config').config;
@@ -13,6 +14,9 @@ exports.watchVideo = (req, res) => {
     const name = Buffer.from(req.params.id, 'base64').toString('ascii');
     const extension = _path.extname(name);
     const contentType = contentTypeMapper[extension.substr(1)];
+
+    HistoryController.setHistory(req.sessionID, req.params.id, _path.basename(name.substr(0, name.lastIndexOf('.'))))
+
     res.render('stream', {
         'src': req.params.id,
         'name': _path.basename(name.substr(0, name.lastIndexOf('.'))),

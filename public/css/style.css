@@ -84,6 +84,10 @@
   padding: 10px 5px;
 }
 
+.content-btn > li.hist {
+  float: left !important;
+}
+
 .content-btn > li > a {
   display: block;
   color: #337ab7;

@@ -5,6 +5,7 @@ module.exports = function (app) {
     const HomeController = require('../controllers/HomeController');
     const ContentController = require('../controllers/ContentController');
     const StreamController = require('../controllers/StreamController');
+    const HistoryController = require('../controllers/HistoryController');
 
     app.use((req, res, next) => {
         logger.logRoute(req);
@@ -15,6 +16,7 @@ module.exports = function (app) {
     app.get('/watch/:id', StreamController.watchVideo);
     app.get('/stream/:id', StreamController.streamVideo);
     app.get('/list', ContentController.list);
+    app.get('/history/get', HistoryController.getHistory);
     app.post('/add', ContentController.add);
     app.post('/make', ContentController.make);
     app.post('/dir/add', ContentController.addDirectory);
