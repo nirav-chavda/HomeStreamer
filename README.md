@@ -19,7 +19,7 @@ Server creates a symbolic link of the video file in `resources/uploads` director
 - [NOTE] To create symbolic links in windows `Admin Privilege` is required.
 - To start the server run the following file:
     * windows : ``run.bat --admin``
-        - to run the server without admin privilege ``run.bat``
+        - to start the server without admin privilege ``run.bat``
     * unix   : ``sh run.sh``
 
 - Application will ask to choose the IP Address to host the server before starting the actual server.
